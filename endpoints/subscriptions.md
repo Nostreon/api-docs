@@ -73,6 +73,8 @@ When using a `npk_test_*` key:
 - `checkout_url` is `null`
 - Poll `/v1/subscribe/status` and it will auto-settle after 3 seconds
 - On settlement, a real subscription record is created in the dev database and a real kind 1163 NIP-63 membership event is published to the dev gated relay
+- **Test subscriptions expire after 7 days** regardless of the `billing` value (to prevent clutter in the dev database)
+- You can delete test subscriptions anytime via `DELETE /v1/subscribe` (see below)
 
 ### What you should do with the response
 
@@ -150,3 +152,55 @@ The user can now access premium content from Nostreon's gated relay (`wss://prem
 | `400` | Missing `invoice_id` |
 | `401` | Missing or invalid API key |
 | `500` | BTCPay query failed |
+
+---
+
+## Delete a test subscription (test mode only)
+
+```
+DELETE /v1/subscribe?invoice_id=test_xxx
+```
+
+Remove a test subscription you previously created. Useful for cleaning up after integration tests so the dev database doesn't fill up with stale rows.
+
+**Restrictions:**
+- Only works with `npk_test_*` keys
+- Only deletes subscriptions whose `invoice_id` starts with `test_`
+- Only deletes subscriptions created by **your** API key (partners can't delete each other's test data)
+- Live subscriptions cannot be deleted via this endpoint — use the standard cancellation flow
+
+### Headers
+
+| Header | Required | Description |
+|---|---|---|
+| `X-Api-Key` | Yes | Your `npk_test_*` API key |
+
+### Example request
+
+```bash
+curl -X DELETE "https://dev.nostreon.com/api/v1/subscribe?invoice_id=test_abc123" \
+  -H "X-Api-Key: npk_test_..."
+```
+
+### Response
+
+```json
+{
+  "deleted": 1,
+  "livemode": false
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `deleted` | number | Number of rows removed (0 or 1) |
+| `livemode` | boolean | Always `false` for this endpoint |
+
+### Errors
+
+| Status | When |
+|---|---|
+| `400` | Missing `invoice_id` or invoice_id doesn't start with `test_` |
+| `401` | Missing or invalid API key |
+| `403` | Using a live key (not allowed) |
+| `500` | Database error |
