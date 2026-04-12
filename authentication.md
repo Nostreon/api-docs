@@ -19,6 +19,15 @@ Keys are issued per partner. See [README.md](./README.md#get-an-api-key) for how
 
 Keys are hashed (SHA-256) at rest. If you lose your key, we can't recover it — we'll issue a new one.
 
+### Key types
+
+| Prefix | Environment | Base URL |
+|---|---|---|
+| `npk_test_*` | Development / testing | `https://dev.nostreon.com/api/v1` |
+| `npk_live_*` | Production | `https://nostreon.com/api/v1` |
+
+Start with a test key to build your integration. Once it works end-to-end, request a live key to go to production. Test keys use dev Nostreon and dev BTCPay (testnet), so no real money moves.
+
 ## NIP-98 HTTP Auth
 
 NIP-98 lets users authenticate HTTP requests by signing an event with their Nostr key. The subscriber never gives you their key; they sign each request through their Nostr signer (browser extension, remote signer, etc.).

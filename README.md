@@ -63,11 +63,19 @@ Payouts are sent automatically to your Lightning address on each successful subs
 
 ## Get an API Key
 
-API keys are issued manually. To request one, [open an issue](https://github.com/Nostreon/api-docs/issues/new) in this repo with:
+API keys come in two flavors:
+
+- **Test keys** (`npk_test_*`) — for development against `dev.nostreon.com`. No real money.
+- **Live keys** (`npk_live_*`) — for production against `nostreon.com`.
+
+We recommend starting with a test key, building your integration, then requesting a live key once everything works end-to-end.
+
+To request a key, [open an issue](https://github.com/Nostreon/api-docs/issues/new) in this repo with:
 
 - Client name
 - **Your npub** (we'll deliver the API key via Nostr DM, never in the issue)
 - Lightning address for receiving referral payouts
+- Which key you want: `test`, `live`, or `both`
 - Expected monthly volume (optional)
 
 We'll reply in the issue to confirm receipt, then send the API key to your npub as an encrypted Nostr direct message (NIP-04). Never share API keys in public channels.
