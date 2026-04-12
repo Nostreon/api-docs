@@ -63,16 +63,14 @@ Payouts are sent automatically to your Lightning address on each successful subs
 
 ## Get an API Key
 
-API keys are currently issued manually. To request one:
+API keys are issued manually. To request one, [open an issue](https://github.com/Nostreon/api-docs/issues/new) in this repo with:
 
-1. Email `partners@nostreon.com` (or open an issue in this repo)
-2. Include:
-   - Client name
-   - Contact email
-   - Lightning address for receiving payouts
-   - Expected monthly volume (optional)
+- Client name
+- Contact email
+- Lightning address for receiving referral payouts
+- Expected monthly volume (optional)
 
-We'll respond with your API key and help you get started.
+We'll reply in the issue with your API key and help you get started.
 
 ## Base URL
 
