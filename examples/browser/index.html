@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nostreon API — Browser Example</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 640px;
+        margin: 40px auto;
+        padding: 0 16px;
+        color: #111;
+      }
+      h1 {
+        font-size: 22px;
+      }
+      label {
+        display: block;
+        margin-top: 12px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-top: 4px;
+        box-sizing: border-box;
+      }
+      button {
+        margin-top: 16px;
+        padding: 10px 16px;
+        font-size: 14px;
+        background: #111;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .tier {
+        border: 1px solid #ddd;
+        padding: 12px;
+        margin-top: 8px;
+        border-radius: 4px;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      .log {
+        margin-top: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Nostreon API — Browser Example</h1>
+    <p>Uses your installed Nostr signer (Alby, nos2x, etc.) to subscribe.</p>
+
+    <label>API base URL</label>
+    <input id="base" value="https://api.nostreon.com/v1" />
+
+    <label>API key</label>
+    <input id="apikey" placeholder="npk_live_..." />
+
+    <label>Creator npub or hex pubkey</label>
+    <input id="creator" placeholder="npub1..." />
+
+    <button id="load">Load tiers</button>
+
+    <div id="tiers"></div>
+    <div id="log" class="log"></div>
+
+    <script type="module">
+      import { buildNip98Auth } from "./nip98-browser.js";
+
+      const baseEl = document.getElementById("base");
+      const keyEl = document.getElementById("apikey");
+      const creatorEl = document.getElementById("creator");
+      const loadBtn = document.getElementById("load");
+      const tiersEl = document.getElementById("tiers");
+      const logEl = document.getElementById("log");
+
+      // Safe log: use textContent to avoid XSS from API error messages
+      function log(msg) {
+        const pre = document.createElement("pre");
+        pre.textContent = msg;
+        logEl.appendChild(pre);
+      }
+
+      function clearChildren(el) {
+        while (el.firstChild) el.removeChild(el.firstChild);
+      }
+
+      function createTierCard(tier, onSubscribe) {
+        const div = document.createElement("div");
+        div.className = "tier";
+
+        const title = document.createElement("strong");
+        title.textContent = tier.name;
+        div.appendChild(title);
+
+        const price = document.createElement("span");
+        price.textContent = ` — $${tier.price_usd}/mo`;
+        div.appendChild(price);
+
+        div.appendChild(document.createElement("br"));
+
+        if (tier.description) {
+          const desc = document.createElement("small");
+          desc.textContent = tier.description;
+          div.appendChild(desc);
+          div.appendChild(document.createElement("br"));
+        }
+
+        const btn = document.createElement("button");
+        btn.textContent = "Subscribe";
+        btn.addEventListener("click", () => onSubscribe(tier));
+        div.appendChild(btn);
+
+        return div;
+      }
+
+      loadBtn.addEventListener("click", async () => {
+        clearChildren(tiersEl);
+        clearChildren(logEl);
+        const base = baseEl.value;
+        const creator = creatorEl.value.trim();
+        if (!creator) return log("Enter a creator npub or hex pubkey");
+
+        try {
+          const res = await fetch(`${base}/creators/${creator}/tiers`);
+          if (!res.ok) return log(`Failed: ${await res.text()}`);
+          const { creator: info, tiers } = await res.json();
+
+          log(`Creator: ${info.display_name || info.npub}`);
+          for (const tier of tiers) {
+            tiersEl.appendChild(createTierCard(tier, subscribe));
+          }
+        } catch (err) {
+          log(`Error: ${err.message}`);
+        }
+      });
+
+      async function subscribe(tier) {
+        const base = baseEl.value;
+        const apiKey = keyEl.value.trim();
+        if (!apiKey) return log("Enter an API key");
+
+        const url = `${base}/subscribe`;
+        const body = JSON.stringify({
+          tier_id: tier.id,
+          billing: "monthly",
+        });
+
+        try {
+          log("Requesting signature from your Nostr extension...");
+          const auth = await buildNip98Auth(url, "POST", body);
+
+          log("Creating invoice...");
+          const res = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Api-Key": apiKey,
+              Authorization: `Nostr ${auth}`,
+            },
+            body,
+          });
+
+          if (!res.ok) {
+            log(`Error: ${await res.text()}`);
+            return;
+          }
+
+          const invoice = await res.json();
+          log(`Invoice: ${invoice.bolt11}`);
+          log(
+            `Amount: $${invoice.amount_usd} (${invoice.amount_sats} sats)`
+          );
+          log("Pay the invoice, then polling for status...");
+
+          // Poll for payment
+          const statusUrl = `${base}/subscribe/status?invoice_id=${invoice.invoice_id}`;
+          for (let i = 0; i < 100; i++) {
+            await new Promise((r) => setTimeout(r, 3000));
+            const s = await fetch(statusUrl, {
+              headers: { "X-Api-Key": apiKey },
+            });
+            const data = await s.json();
+            if (data.paid) {
+              log("✓ Subscription active");
+              return;
+            }
+            if (data.status === "Expired" || data.status === "Invalid") {
+              log(`✗ ${data.status}`);
+              return;
+            }
+          }
+          log("Timed out");
+        } catch (err) {
+          log(`Error: ${err.message}`);
+        }
+      }
+    </script>
+  </body>
+</html>

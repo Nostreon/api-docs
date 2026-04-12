@@ -1,0 +1,12 @@
+{
+  "name": "nostreon-api-example-nodejs",
+  "version": "0.1.0",
+  "description": "Example Node.js integration with the Nostreon API",
+  "type": "module",
+  "scripts": {
+    "start": "node subscribe.js"
+  },
+  "dependencies": {
+    "nostr-tools": "^2"
+  }
+}
