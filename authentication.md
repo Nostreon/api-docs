@@ -21,12 +21,24 @@ Keys are hashed (SHA-256) at rest. If you lose your key, we can't recover it —
 
 ### Key types
 
-| Prefix | Environment | Base URL |
-|---|---|---|
-| `npk_test_*` | Development / testing | `https://dev.nostreon.com/api/v1` |
-| `npk_live_*` | Production | `https://nostreon.com/api/v1` |
+| Prefix | Mode | Base URL | BTCPay |
+|---|---|---|---|
+| `npk_test_*` | test | `https://dev.nostreon.com/api/v1` | Skipped — invoices are mocked |
+| `npk_live_*` | live | `https://nostreon.com/api/v1` | Real invoices, real payments |
 
-Start with a test key to build your integration. Once it works end-to-end, request a live key to go to production. Test keys use dev Nostreon and dev BTCPay (testnet), so no real money moves.
+**Test mode** bypasses BTCPay entirely. When you call `POST /v1/subscribe` with a test key:
+
+1. A fake invoice is created in memory with a `test_` prefix
+2. You get back a placeholder `bolt11` string and the amount — **do NOT try to pay it**, it's not a real invoice
+3. When you poll `GET /v1/subscribe/status`, it returns `Processing` for the first 3 seconds, then `Settled`
+4. On settlement, Nostreon creates a real subscription record in the dev database AND publishes a real kind 1163 NIP-63 membership event to the dev gated relay
+5. No money moves. No creator payout. No referral payout.
+
+This lets you build and test your full integration — invoice display, polling, post-success UI, subscription verification on the gated relay — without spending any sats.
+
+Responses include a `livemode: false` field when using a test key, matching Stripe's convention.
+
+Start with a test key. Once everything works end-to-end, request a live key for production.
 
 ## NIP-98 HTTP Auth
 

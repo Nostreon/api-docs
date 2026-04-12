@@ -65,10 +65,10 @@ Payouts are sent automatically to your Lightning address on each successful subs
 
 API keys come in two flavors:
 
-- **Test keys** (`npk_test_*`) — for development against `dev.nostreon.com`. No real money.
-- **Live keys** (`npk_live_*`) — for production against `nostreon.com`.
+- **Test keys** (`npk_test_*`) — for development against `dev.nostreon.com`. BTCPay is skipped entirely; invoices are mocked and auto-settle on polling. No money moves, but real subscription records and kind 1163 membership events are created in the dev environment so you can test your full integration.
+- **Live keys** (`npk_live_*`) — for production against `nostreon.com`. Real invoices, real payments, real payouts.
 
-We recommend starting with a test key, building your integration, then requesting a live key once everything works end-to-end.
+We recommend starting with a test key, building your integration, then requesting a live key once everything works end-to-end. See [authentication.md](./authentication.md#key-types) for full details on test mode.
 
 To request a key, [open an issue](https://github.com/Nostreon/api-docs/issues/new) in this repo with:
 

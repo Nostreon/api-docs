@@ -48,19 +48,31 @@ Creates a Lightning invoice for a user to pay. The user's subscription is activa
     "name": "Supporter",
     "price_usd": 5.00
   },
-  "billing": "monthly"
+  "billing": "monthly",
+  "livemode": true
 }
 ```
 
 | Field | Type | Description |
 |---|---|---|
-| `invoice_id` | string | Use with `GET /v1/subscribe/status` to poll |
-| `checkout_url` | string | Full BTCPay checkout page (fallback if you can't render Lightning natively) |
-| `bolt11` | string \| null | BOLT11 Lightning invoice — display as QR code or pass to a wallet |
+| `invoice_id` | string | Use with `GET /v1/subscribe/status` to poll. Test invoices are prefixed with `test_` |
+| `checkout_url` | string \| null | BTCPay checkout page. `null` in test mode |
+| `bolt11` | string \| null | BOLT11 Lightning invoice. In test mode this is a placeholder — do not pay it |
 | `amount_sats` | number \| null | Invoice amount in satoshis |
 | `amount_usd` | number | Invoice amount in USD (includes annual discount if applicable) |
 | `tier` | object | Tier info for display |
 | `billing` | string | Confirmed billing period |
+| `livemode` | boolean | `true` in production, `false` when using a test key |
+
+#### Test mode behavior
+
+When using a `npk_test_*` key:
+- BTCPay is skipped entirely
+- `invoice_id` starts with `test_`
+- `bolt11` is a placeholder string (not payable)
+- `checkout_url` is `null`
+- Poll `/v1/subscribe/status` and it will auto-settle after 3 seconds
+- On settlement, a real subscription record is created in the dev database and a real kind 1163 NIP-63 membership event is published to the dev gated relay
 
 ### What you should do with the response
 
