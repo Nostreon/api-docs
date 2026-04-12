@@ -25,7 +25,8 @@ Creates a Lightning invoice for a user to pay. The user's subscription is activa
 ```json
 {
   "tier_id": "tier_abc123",
-  "billing": "monthly"
+  "billing": "monthly",
+  "subscribe_event": { "kind": 7001, "pubkey": "...", "sig": "..." }
 }
 ```
 
@@ -33,6 +34,33 @@ Creates a Lightning invoice for a user to pay. The user's subscription is activa
 |---|---|---|---|
 | `tier_id` | string | Yes | Tier ID from `GET /v1/creators/{npub}/tiers` |
 | `billing` | string | No | `"monthly"` (default) or `"annual"` |
+| `subscribe_event` | object | No | Signed NIP-88 kind 7001 event. See below |
+
+#### `subscribe_event` (optional NIP-88 subscribe event)
+
+If you include a signed kind 7001 event, Nostreon publishes it to the public relay on settlement so the subscription appears in NIP-88 aware clients and the kind 7003 payment receipt can reference it.
+
+The event must be signed by the **same pubkey** as the NIP-98 auth event (the subscriber).
+
+Build it with tags:
+
+```json
+{
+  "kind": 7001,
+  "pubkey": "<subscriber_pubkey>",
+  "tags": [
+    ["p", "<creator_pubkey>"],
+    ["a", "37001:<creator_pubkey>:<tier_id>"],
+    ["amount", "500", "USD", "monthly"]
+  ],
+  "content": "",
+  "created_at": 1712345678,
+  "id": "...",
+  "sig": "..."
+}
+```
+
+The `amount` tag uses cents (stringified). Cadence must match the `billing` field in the body.
 
 ### Response
 
