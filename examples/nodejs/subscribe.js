@@ -13,7 +13,7 @@
 import { generateSecretKey, nip19 } from "nostr-tools";
 import { buildNip98Auth } from "./nip98.js";
 
-const API_BASE = process.env.API_BASE || "https://api.nostreon.com/v1";
+const API_BASE = process.env.API_BASE || "https://nostreon.com/api/v1";
 const API_KEY = process.env.NOSTREON_API_KEY;
 
 if (!API_KEY) {

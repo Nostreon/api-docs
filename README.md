@@ -8,17 +8,17 @@ Nostreon is a creator subscription platform on Nostr and Bitcoin. This API lets 
 
 ```bash
 # 1. Fetch a creator's tiers (no auth required)
-curl https://api.nostreon.com/v1/creators/npub1.../tiers
+curl https://nostreon.com/api/v1/creators/npub1.../tiers
 
 # 2. Subscribe a user (requires API key + NIP-98 signed event)
-curl -X POST https://api.nostreon.com/v1/subscribe \
+curl -X POST https://nostreon.com/api/v1/subscribe \
   -H "Authorization: Nostr <base64_signed_event>" \
   -H "X-Api-Key: <your_api_key>" \
   -H "Content-Type: application/json" \
   -d '{"tier_id": "...", "billing": "monthly"}'
 
 # 3. Poll for payment (after user pays the Lightning invoice)
-curl "https://api.nostreon.com/v1/subscribe/status?invoice_id=..." \
+curl "https://nostreon.com/api/v1/subscribe/status?invoice_id=..." \
   -H "X-Api-Key: <your_api_key>"
 ```
 
@@ -74,8 +74,8 @@ We'll reply in the issue to confirm receipt, then send the API key to your npub 
 
 ## Base URL
 
-- **Production**: `https://api.nostreon.com/v1`
-- **Staging**: `https://dev-api.nostreon.com/v1`
+- **Production**: `https://nostreon.com/api/v1`
+- **Staging**: `https://dev.nostreon.com/api/v1`
 
 ## Rate Limits
 

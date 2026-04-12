@@ -50,7 +50,7 @@ For each authenticated request, your client must:
   "created_at": 1712345678,
   "content": "",
   "tags": [
-    ["u", "https://api.nostreon.com/v1/subscribe"],
+    ["u", "https://nostreon.com/api/v1/subscribe"],
     ["method", "POST"],
     ["payload", "a3b5c7d9..."]
   ]
@@ -60,8 +60,8 @@ For each authenticated request, your client must:
 ### Example request
 
 ```
-POST /v1/subscribe HTTP/1.1
-Host: api.nostreon.com
+POST /api/v1/subscribe HTTP/1.1
+Host: nostreon.com
 Content-Type: application/json
 X-Api-Key: npk_live_abc123...
 Authorization: Nostr eyJraW5kIjoyNzIzNSwiY3JlYXRlZF9hdCI6MTcxMjM0NTY3OCwi...

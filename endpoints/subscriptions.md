@@ -102,7 +102,7 @@ NIP-98 is not required here — the `invoice_id` is not guessable.
 ### Example request
 
 ```bash
-curl "https://api.nostreon.com/v1/subscribe/status?invoice_id=ABC123XYZ" \
+curl "https://nostreon.com/api/v1/subscribe/status?invoice_id=ABC123XYZ" \
   -H "X-Api-Key: npk_live_..."
 ```
 

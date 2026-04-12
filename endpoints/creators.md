@@ -17,7 +17,7 @@ Returns basic creator info without tiers.
 ### Example request
 
 ```bash
-curl https://api.nostreon.com/v1/creators/npub1e80ugn39xl9zr8smljugd3u3te8233g62j2rt5gl4u4j4pymd6zshhu2w9
+curl https://nostreon.com/api/v1/creators/npub1e80ugn39xl9zr8smljugd3u3te8233g62j2rt5gl4u4j4pymd6zshhu2w9
 ```
 
 ### Example response
@@ -72,7 +72,7 @@ Returns all active subscription tiers for a creator. Use this to display subscri
 ### Example request
 
 ```bash
-curl https://api.nostreon.com/v1/creators/npub1.../tiers
+curl https://nostreon.com/api/v1/creators/npub1.../tiers
 ```
 
 ### Example response
