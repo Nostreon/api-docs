@@ -44,11 +44,21 @@ curl "https://nostreon.com/api/v1/subscribe/status?invoice_id=..." \
 
 ## Documentation
 
+**Reference**
 - [Authentication](./authentication.md) — API keys and NIP-98 HTTP auth
 - [Creators](./endpoints/creators.md) — fetch profiles and tiers
 - [Subscriptions](./endpoints/subscriptions.md) — create and poll subscriptions
-- [Node.js Example](./examples/nodejs/) — working Node.js integration
-- [Browser Example](./examples/browser/) — browser JavaScript integration
+
+**Generic examples** (any HTTP-capable client)
+- [Node.js](./examples/nodejs/) — full subscription flow with NIP-98 signing
+- [Browser](./examples/browser/) — vanilla JavaScript integration
+
+**Client-specific examples** (idiomatic for each Nostr client)
+- [Primal](./examples/primal/) — web/iOS/Android, integrates with Primal Wallet for one-tap payment
+- [Damus](./examples/damus/) — iOS Swift, hands off payment to the user's Lightning wallet via `lightning:` URI
+- [Amethyst](./examples/amethyst/) — Android Kotlin, opens the user's Lightning wallet via Android intent
+
+Each client example walks through the full flow (discover tiers → sign auth event → create invoice → handle payment → poll for settlement) using the language and patterns idiomatic to that client. The HTTP API is identical regardless of which client you're integrating into; the examples differ in how they sign events, how they pay invoices, and how they show subscription state to the user.
 
 ## Revenue Share
 
