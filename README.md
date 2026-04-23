@@ -48,6 +48,7 @@ curl "https://nostreon.com/api/v1/subscribe/status?invoice_id=..." \
 - [Authentication](./authentication.md) — API keys and NIP-98 HTTP auth
 - [Creators](./endpoints/creators.md) — fetch profiles and tiers
 - [Subscriptions](./endpoints/subscriptions.md) — create and poll subscriptions
+- [Partners](./endpoints/partners.md) - analytics for your own API key (referrals, GMV, earnings)
 
 **Generic examples** (any HTTP-capable client)
 - [Node.js](./examples/nodejs/) — full subscription flow with NIP-98 signing
